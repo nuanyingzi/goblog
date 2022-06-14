@@ -14,6 +14,7 @@ func handlerFunc(w http.ResponseWriter, r *http.Request) {
 	} else if r.URL.Path == "/help" {
 		fmt.Fprintf(w, "这是帮助页")
 	} else {
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "<h1>页面未找到 :( </h1>"+"<p>如有疑惑，请联系我们。</p>")
 	}
 }
