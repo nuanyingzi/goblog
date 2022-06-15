@@ -34,6 +34,10 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "创建新的文章")
 }
 
+func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "创建博文表单")
+}
+
 func forceHTMLMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1 设置标头
@@ -62,6 +66,7 @@ func main() {
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
+	router.HandleFunc("/articles", articlesCreateHandler).Methods("GET").Name("articles.create")
 
 	// 自定义404页面
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
@@ -69,10 +74,5 @@ func main() {
 	// 中间件：强制内容类型为 HTML
 	router.Use(forceHTMLMiddleware)
 
-	// 通过命名路由获取URL示例
-	homeURL, _ := router.Get("home").URL()
-	fmt.Println("homeURL:", homeURL)
-	articleURL, _ := router.Get("articles.show").URL("id", "23")
-	fmt.Println("articleURL:", articleURL)
 	http.ListenAndServe(":3000", removeTrailingSlash(router))
 }
