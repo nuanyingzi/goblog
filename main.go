@@ -25,10 +25,6 @@ type ArticlesFormData struct {
 	Errors      map[string]string
 }
 
-func init() {
-	sql.Register("mysql", &MySqlDriver)
-}
-
 func initDB() {
 	var err error
 	config := mysql.Config{
@@ -51,6 +47,18 @@ func initDB() {
 
 	// 尝试连接，失败会报错
 	err = db.Ping()
+	checkError(err)
+}
+
+func createTables() {
+	createArticlesSql := `
+		CREATE TABLE IF NOT EXISTS articles(
+			id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+			title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+			body longtext COLLATE utf8mb4_unicode_ci
+		);
+	`
+	_, err := db.Exec(createArticlesSql)
 	checkError(err)
 }
 
@@ -172,6 +180,7 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 func main() {
 
 	initDB()
+	createTables()
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
